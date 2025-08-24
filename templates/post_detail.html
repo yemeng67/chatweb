@@ -1,0 +1,159 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block css %}
+    {{ block.super }}
+    <link rel="stylesheet" href="{% static 'css/post_detail.css' %}?v={{ timestamp }}">
+{% endblock %}
+
+{% block content_wrapper %}
+    <main class="content-wrapper" style="margin-top: 25px;">
+
+    {% block content %}
+    <div class="content-container">
+        <!-- 左侧预留空间 -->
+        <div class="side-placeholder side-placeholder-left"></div>
+
+        <!-- 右侧预留空间 -->
+        <div class="side-placeholder side-placeholder-right"></div>
+
+        <div class="post-content-wrapper">
+            <!-- 返回首页按钮 -->
+            <div class="back-to-home">
+                <button id="backToHomeBtn" class="back-button" title="返回首页">
+                    <span class="back-icon">🏠</span>
+                    <span class="back-text">首页</span>
+                </button>
+            </div>
+
+            <!-- 帖子标题区域 -->
+            <header class="post-header">
+                <h1 class="post-title">{{ post.title }}</h1>
+
+                <!-- 作者和分类信息 -->
+                <div class="post-meta">
+                    <div class="post-author">
+                        <img id="user-avatar" alt="用户头像" class="avatar"
+                             src="{% if post.author.avatar %}{{ post.author.avatar.url }}
+                                  {% else %}{% static 'images/申鹤.jpg' %}
+                                  {% endif %}">
+                        <span>{{ post.author.username }}</span>
+                    </div>
+
+                    <!-- 分类标签 -->
+                    <div class="post-categories">
+                        {% for category in categories %}
+                            <span class="category-tag">{{ category.name }}</span>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <!-- 浏览量和发布时间 -->
+                <div class="post-stats">
+                    <div class="stat-item">
+                        <span class="stat-icon">👁️</span>
+                        <span>{{ post.views }} 浏览</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-icon">📅</span>
+                        <span>{{ post.created_at|date:"Y-m-d H:i" }}</span>
+                    </div>
+                </div>
+            </header>
+
+            <!-- 帖子内容 -->
+            <article class="post-content">
+                {{ post.content|linebreaks }}
+            </article>
+
+            <!-- 编辑按钮 -->
+            {% if user.is_authenticated and user == post.author %}
+                <div style="text-align: right; margin-top: 20px;">
+                    <a href="{% url 'chat:edit_post_html' post.id %}" class="edit-post-link">编辑帖子</a>
+                    <span>状态：{{ post.get_status_display }}</span>
+                </div>
+            {% endif %}
+
+            <!-- 点赞区域 -->
+            <div class="post-like-section">
+                <div id="post_like_section"></div>
+            </div>
+
+            <!-- 评论区 -->
+            <section class="comments-section">
+                <h2 class="comments-title">评论</h2>
+
+                <!-- 评论表单 -->
+                <form id="add_comment" class="comment-form">
+                    <label for="content">请输入评论：</label>
+                    <input type="text" name="content" placeholder="请输入内容" id="content">
+                    {% csrf_token %}
+                    <button type="submit">提交评论</button>
+                </form>
+
+                <!-- 评论列表 -->
+                <div id="post-comments-content" class="comments-list" data-post-id="{{ post.id }}"></div>
+
+                <!-- 分页控件 -->
+                <div id="post-comments-pagination" class="pagination"></div>
+            </section>
+        </div>
+    </div>
+
+    {% endblock %}
+    </main>
+{% endblock %}
+
+{% block js %}
+    {{ block.super }}
+    <script>
+        const post_id = {{ post.id }}
+        const comment_api_url = "{% url 'chat:comment' post.id %}"
+        const add_comment_api_url = "{% url 'chat:add_comment' post.id %}"
+        const post_like_api_url = "{% url 'chat:like_post' post.id %}"
+    </script>
+
+    <script src="{% static 'js/comment.js' %}"></script>
+
+    <script>
+        // 返回首页按钮功能
+        document.getElementById('backToHomeBtn').addEventListener('click', function() {
+            window.location.href = "/index";
+        });
+
+        const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+        document.addEventListener("DOMContentLoaded", function(){
+            //帖子点赞
+            const likeButton = document.getElementById('post_like_section');
+
+            async function postLikeButton(is_init=false) {
+                try {
+                    const response = await fetch(post_like_api_url, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRFToken': csrfToken
+                        },
+                        body: JSON.stringify({ 'is_init': is_init }),
+                    });
+
+                    const like_data = await response.json();
+
+                    likeButton.innerHTML = `
+                    <button class="like-button ${like_data.is_liked ? 'liked' : ''}" id="post_like_button">
+                        <span class="like-icon">
+                        ${like_data.is_liked ? '❤️' : '🤍'}
+                        ${like_data.is_liked ? '已点赞' : '点赞'}</span>(${like_data.like_count})
+                    </button>`;
+
+                    document.getElementById('post_like_button').addEventListener('click',()=> postLikeButton(false));
+                } catch(error) {
+                    console.log('点赞失败：',error);
+                }
+            }
+            postLikeButton(true);
+        });
+    </script>
+
+{% endblock %}

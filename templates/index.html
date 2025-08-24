@@ -1,0 +1,67 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}主页{% endblock %}
+
+{% block css %}
+    {{ block.super }}
+    <link rel="stylesheet" href="{% static 'css/index.css' %}?v={{ timestamp }}">
+{% endblock %}
+
+
+{% block content_wrapper %}
+
+<main class="content-wrapper" style="margin-top: 0;"> <!-- 修改为自定义值 -->
+
+    {% block content %}
+
+    <!-- 主内容区域 -->
+    <div class="post-list-wrapper">
+        <!-- 控制区域 -->
+        <div class="controls-wrapper">
+            <!-- 分类导航 -->
+            <div class="category-buttons">
+                <button id="all-categories" class="btn category-btn active" data-category-id="0">所有分类</button>
+                {% for category in categories %}
+                <button class="btn category-btn" data-category-id="{{ category.id }}">{{ category.name }}</button>
+                {% endfor %}
+            </div>
+
+            <!-- 排序下拉框 -->
+            <div class="sort-container">
+                <select id="sort-select" class="btn">
+                    <option value="views" {% if default_sort == 'views' %}selected{% endif %}>按热度</option>
+                    <option value="likes" {% if default_sort == 'likes' %}selected{% endif %}>按点赞</option>
+                    <option value="created_at" {% if default_sort == 'created_at' %}selected{% endif %}>按时间</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- 帖子列表 -->
+        <div id="post-list-container">
+            <!-- 初始内容会被JS替换 -->
+        </div>
+
+        <div id="pagination-container"></div>
+    </div>
+
+    {% endblock %}
+
+</main>
+
+{% endblock %}
+
+
+{% block js %}
+    {{ block.super }}
+    <script src="{% static 'js/index.js' %}?v={{ timestamp }}"></script>
+    <script>
+        const index_api_url = "{% url 'chat:index_data' %}";
+
+        // 初始化参数
+        const DEFAULT_PARAMS = {
+            sort: "{{ default_sort }}",
+            category: "{{ selected_category|default:0 }}",
+            page: 1
+        };
+    </script>
+{% endblock %}

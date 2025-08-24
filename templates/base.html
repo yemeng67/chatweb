@@ -1,0 +1,94 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}小小论坛{% endblock %}</title>
+
+    <!-- 公共 CSS -->
+    {% block css %}
+        <link rel="stylesheet" href="{% static 'css/base.css' %}?v={{ timestamp }}">
+    {% endblock %}
+
+</head>
+
+<body>
+    <nav class="main-nav">
+        <div class="nav-container">
+            <!-- 用户头像区域 -->
+            <div class="nav-user" id="userAvatar">
+                {% if user.is_authenticated %}
+                    <img id="nav-user-avatar" alt="用户头像"
+                         src="{% if user.avatar %}{{ user.avatar.url }}
+                              {% else %}{% static 'images/申鹤.jpg' %}
+                              {% endif %}">
+                    <div class="dropdown-menu" id="dropdownMenu">
+                        <div class="dropdown-item">
+                            <a id="userCenter" href="{% url 'userspace:index' %}">用户中心</a>
+                        </div>
+                        <div class="dropdown-item">
+                            <a id="logoutBtn" href ="#">退出登录</a>
+                        </div>
+                    </div>
+                {% else %}
+                    <a href="{% url 'accounts:login' %}" class="nav-link">登录</a>
+                {% endif %}
+            </div>
+
+            <!-- 首页链接 -->
+            <div class="nav-return-index">
+                <a href="{% url 'chat:index' %}" class="nav-link">首页</a>
+            </div>
+
+            <!-- 搜索区域 -->
+            <div class="nav-search-block">
+                <a href="{% url 'post_search:search_index' %}" class="search-link">搜索内容</a>
+            </div>
+
+            <!-- 添加帖子按钮 -->
+            <div class="nav-add-post">
+                <a href="{% url 'chat:add_post' %}" class="add-post-btn" title="添加帖子">
+                    <span class="plus-icon">+</span>
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    {% block content_wrapper %}
+        <main class="content-wrapper" style="margin-top: 80px;"> <!-- 为固定导航栏留出空间 -->
+            {% block content %}{% endblock %}
+        </main>
+    {% endblock %}
+
+    <!-- 公共 JS -->
+    {% block js %}
+        <script>
+            const logout_url = "{% url 'accounts:logout' %}";
+            // 头像点击事件处理
+            document.getElementById('userAvatar').addEventListener('click', function(e) {
+                e.stopPropagation(); // 阻止事件冒泡到父元素
+                const dropdown = document.getElementById('dropdownMenu');
+                dropdown.classList.toggle('show');
+            });
+
+            // 退出登录确认
+            document.getElementById('logoutBtn').addEventListener('click', function(e) {
+                e.preventDefault(); // 阻止默认跳转
+                if (confirm('确定要退出登录吗？')) {
+                    window.location.href = logout_url; // 确认后跳转
+                }
+            });
+
+            // 点击页面其他区域关闭菜单
+            document.addEventListener('click', function(e) {
+                const avatar = document.getElementById('userAvatar');
+                const dropdown = document.getElementById('dropdownMenu');
+                if (!avatar.contains(e.target)) {
+                    dropdown.classList.remove('show');
+                }
+            });
+        </script>
+
+    {% endblock %}
+</body>
+</html>

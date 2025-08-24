@@ -1,0 +1,125 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block title %}个人中心{% endblock %}
+
+{% block css %}
+    {{ block.super }}
+    <link rel="stylesheet" href="{% static 'css/userspace_index.css' %}?v={{ timestamp }}">
+{% endblock %}
+
+{% block content %}
+
+    <div class="container">
+    <!--用户空间主页（全部包裹在内）-->
+
+        <div class="avatar-container">  {# 头像 #}
+            {% if user.avatar %}
+                <img src="{{ user.avatar.url }}" alt="头像" class="avatar">
+            {% else %}
+                <img src="{% static 'images/申鹤.jpg' %}" alt="默认头像" class="avatar">
+            {% endif %}
+
+            <!-- 头像弹窗 -->
+            <div class="modal" id="avatarModal">
+                <div class="modal-backdrop"></div>
+                <div class="modal-content">
+                    <h3>更换头像</h3>
+                    <input type="file" id="avatarInput" accept="image/*" hidden>
+                    <img id="previewAvatar" alt="预览头像" class="modal-preview"
+                         src="{% if user.avatar %}{{ user.avatar.url }}{% else %}{% static 'images/../media/avatars/default/申鹤.jpg' %}{% endif %}">
+                    <button class="modal-btn" onclick="document.getElementById('avatarInput').click()">选择图片</button>
+                    <!--.click()等于出发点击，也就是说通过这个点击可以出发另一个点击-->
+                    <button class="modal-btn" onclick="submitAvatar()">确认上传</button>
+                    <button class="modal-btn cancel-btn" onclick="closeModal('avatarModal')">取消</button>
+              </div>
+            </div>
+        </div>
+
+        <div class="user-info">    {# 个人资料 #}
+            <h2 class="username">{{ user.username }}</h2>
+            {% if user.bio %}
+                <p>{{ user.bio }}</p>
+            {% else %}
+                <p>暂无简介</p>
+            {% endif %}
+
+            <!-- 简介弹窗 -->
+            <div class="modal" id="bioModal">
+                <div class="modal-backdrop"></div>
+                <div class="modal-content">
+                    <h3>编辑简介</h3>
+                    <textarea id="bioInput" rows="4">{{ user.bio|default:"" }}</textarea>
+                    <div class="modal-actions">
+                        <button class="modal-btn" onclick="submitBio()">提交</button>
+                        <button class="modal-btn cancel-btn" onclick="closeModal('bioModal')">取消</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="nav-wrapper">  {# 导航 #}
+            <button class="nav-btn active" data-target="post">我的帖子</button>
+            <button class="nav-btn" data-target="comment">发表的评论</button>
+            <button class="nav-btn" data-target="like">收藏的帖子</button>
+        </div>
+
+        <div class="content-container">
+        <!--内容-->
+            <div id="like" class="content">    {# 收藏的帖子 #}
+                <ul class="post-list">
+                    {% for post in like_posts %}
+                        <li class="post-item">
+                            <a href="{% url 'chat:post_detail' post.id %}">{{ post.title }}</a>
+                        </li>
+                    {% endfor %}
+                </ul>
+            </div>
+
+
+            <div id="post" class="content active">  {# 我的帖子 #}
+                <ul class="post-list">
+                    {% for post in user_posts %}
+                        <li class="post-item">
+                            <a href="{% url 'chat:post_detail' post.id %}"
+                               {% if post.status == 'draft' %}style="color: red" {% endif %}
+                            >（{{ post.get_status_display }}）{{ post.title }}</a>
+                        </li>
+                    {% endfor %}
+                </ul>
+            </div>
+
+            <div id="comment" class="content">   {# 发表的评论 #}
+                <ul class="post-list">
+                    {% for comment in comments %}
+                        <li class="post-item">
+                            <p>评论：{{ comment.content }}</p>
+                            <p>发表于：<a href="{% url 'chat:post_detail' comment.post.id %}">{{ comment.post.title }}</a></p>
+                            <small>发布于：{{ comment.created_at }}</small>
+                        </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
+
+{% block js %}
+
+    {{ block.super }}
+
+    <script>
+        const upload_avatar_api_url = "{% url 'userspace:upload_avatar' %}";
+        const update_bio_api_url = "{% url 'userspace:update_bio' %}";
+        {% if user.avatar %}
+            const avatar_url = "{{ user.avatar.url }}"
+        {% else %}
+            const avatar_url = "{% static 'images/申鹤.jpg' %}";
+        {% endif %}
+    </script>
+
+    <script src="{% static 'js/userspace_index.js' %}"></script>
+
+{% endblock %}

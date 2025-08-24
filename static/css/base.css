@@ -1,0 +1,225 @@
+/* base.css 顶部添加 */
+html {
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+}
+
+*, *:before, *:after {
+    box-sizing: inherit;
+}
+
+/* 全局样式重置 */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* 固定导航栏样式 */
+.main-nav {
+    position: fixed; /* 固定定位 */
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 60px; /* 适中高度 */
+    background: linear-gradient(135deg, #2c3e50, #3498db); /* 蓝色渐变 */
+    color: white;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 20px;
+    z-index: 100; /* 置顶 */
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1); /* 阴影效果 */
+    gap: 15px; /* 元素间距 */
+}
+
+/* 导航容器 */
+.nav-container {
+    display: flex;
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    align-items: center;
+    justify-content: flex-start; /* 左对齐容器 */
+}
+
+/* 用户头像样式 */
+.nav-user {
+    position: relative; /* 相对定位 */
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    cursor: pointer; /* 悬停手型 */
+}
+
+/* 头像图片 */
+#nav-user-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%; /* 圆形头像 */
+    object-fit: cover;
+}
+
+/* 下拉菜单 */
+.dropdown-menu {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    background: white;
+    color: #333;
+    border-radius: 4px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    display: none; /* 默认隐藏 */
+    min-width: 120px;
+    padding: 5px 0;
+    animation: slideDown 0.3s ease; /* 下拉动画 */
+    z-index: 9999; /* 确保在最上层 */
+}
+
+/* 下拉菜单项 */
+.dropdown-item {
+    padding: 8px 12px;
+    cursor: pointer;
+    transition: background 0.3s;
+    text-align: center; /* 文字居中 */
+    white-space: nowrap; /* 防止文字换行 */
+}
+
+/* 导航链接样式 */
+.nav-link {
+    color: white;
+    text-decoration: none;
+    padding: 10px 15px;
+    border-radius: 4px;
+    transition: background 0.3s;
+}
+
+/* 搜索块样式 */
+.nav-search-block {
+    flex-grow: 1; /* 占据剩余空间 */
+    margin: 0 20px;
+    text-align: center;
+}
+
+/* 搜索链接 */
+.search-link {
+    display: block;
+    padding: 12px 20px;
+    background: #3498db; /* 浅蓝色背景 */
+    border-radius: 25px; /* 圆角 */
+    color: white;
+    text-decoration: none;
+    transition: all 0.3s;
+}
+
+/* 悬停效果 */
+.nav-link:hover,
+.dropdown-item:hover,
+.search-link:hover{
+    background: #45a0d4;
+    transform: translateY(-2px); /* 上浮效果 */
+}
+
+.nav-return-index:hover{
+    transform: translateY(-2px);
+}
+
+#nav-user-avatar {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); /* 添加贝塞尔曲线动画 */
+    transform: translateY(0); /* 初始位置 */
+}
+
+/* 悬停时上浮效果 */
+#nav-user-avatar:hover {
+    transform: translateY(-5px) scale(1.05); /* 向上移动5px并轻微放大 */
+    box-shadow: 0 8px 16px rgba(0,0,0,0.1); /* 增强阴影效果 */
+    z-index: 10; /* 提高层级防止被遮挡 */
+}
+
+/* 添加动效过渡 */
+.nav-user:hover #nav-user-avatar {
+    filter: brightness(1.1) contrast(1.05); /* 增强图像对比度 */
+}
+
+/* 内容区域 */
+.content-wrapper {
+    margin-top: 80px; /* 避免内容被导航栏遮挡 */
+    padding: 20px;
+}
+
+.nav-link,
+.dropdown-item a {
+    text-decoration: none !important; /* 强制覆盖原有样式 */
+}
+
+
+/* 加号 */
+.nav-add-post {
+    position: absolute;
+    right: 20px; /* 距离右侧20px */
+    top: 50%;
+    transform: translateY(-50%); /* 垂直居中 */
+    z-index: 100; /* 确保层级高于其他元素 */
+}
+
+.add-post-btn {
+    width: 56px;
+    height: 56px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #71b1e3; /* 绿色背景 */
+    border-radius: 50%;
+    color: white;
+    text-decoration: none;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    transition: all 0.3s ease;
+    font-size: 24px;
+    border: 2px solid transparent;
+}
+
+.add-post-btn:hover {
+    background: #5367b1;
+    transform: translateY(-5%) scale(1.1);
+    box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+}
+
+/*.add-post-btn:active {*/
+/*    transform: translateY(-50%) scale(0.95);*/
+/*} 点击上浮  */
+
+.plus-icon {
+    position: relative;
+
+}
+
+/* 添加悬浮提示 */
+.add-post-btn::after {
+    content: "添加帖子";
+    position: absolute;
+    top: -30px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #333;
+    color: white;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+}
+
+.add-post-btn:hover::after {
+    opacity: 1;
+    visibility: visible;
+    top: -40px;
+}
+
+
+/* 需要补充的显示样式 */
+.dropdown-menu.show {
+    display: block !important; /* 强制覆盖默认隐藏 */
+    animation: slideDown 0.3s ease;
+}

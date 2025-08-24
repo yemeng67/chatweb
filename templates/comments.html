@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>创建评论</title>
+</head>
+<body>
+    <h3>添加评论</h3>
+    <form method="post" id="comment-form">
+        <input type="hidden" name="post_id" value="{{ post_id }}">
+{#        <input type="hidden" name="parent_id" value=""> <!-- 默认为空 -->#}
+{#        <textarea name="content" placeholder="请输入评论内容" required></textarea>#}
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">提交评论</button>
+    </form>
+</body>
+</html>
