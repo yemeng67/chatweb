@@ -22,8 +22,8 @@
             <!-- 返回首页按钮 -->
             <div class="back-to-home">
                 <button id="backToHomeBtn" class="back-button" title="返回首页">
-                    <span class="back-icon">🏠</span>
-                    <span class="back-text">首页</span>
+                    <span class="back-icon"><-</span>
+                    <span class="back-text">返回</span>
                 </button>
             </div>
 
@@ -119,7 +119,11 @@
     <script>
         // 返回首页按钮功能
         document.getElementById('backToHomeBtn').addEventListener('click', function() {
-            window.location.href = "/index";
+            if (window.history.length > 1) {
+                    window.history.back();
+                } else {
+                    window.location.href = "/index"; // 回退到首页
+                }
         });
 
         const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
